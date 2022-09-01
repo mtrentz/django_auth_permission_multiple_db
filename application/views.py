@@ -6,6 +6,8 @@ from .serializers import SampleSerializer
 from .models import SampleModel
 from .permissions import AccessProductTwo, AccessProductOne
 
+from knox.auth import TokenAuthentication
+
 # Create your views here.
 class SampleView(APIView):
     def get(self, request):
@@ -22,6 +24,7 @@ class SampleView(APIView):
 
 
 class ProductOne(APIView):
+    authentication_classes = (TokenAuthentication,)
     permission_classes = [IsAuthenticated, AccessProductOne]
 
     def get(self, request):
@@ -29,7 +32,8 @@ class ProductOne(APIView):
 
 
 class ProductTwo(APIView):
-    permission_classes = [IsAuthenticated, AccessProductTwo]
+    # authentication_classes = (TokenAuthentication,)
+    # permission_classes = [IsAuthenticated, AccessProductTwo]
 
     def get(self, request):
         return Response({"product": "two"})

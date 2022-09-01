@@ -40,7 +40,7 @@ class AuthRouter:
         "staticfiles",
         "users",
         "rest_framework",
-        "token_blacklist",
+        "knox",
     }
 
     def db_for_read(self, model, **hints):
