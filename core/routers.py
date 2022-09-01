@@ -36,6 +36,8 @@ class AuthRouter:
         "contenttypes",
         "admin",
         "sessions",
+        "messages",
+        "staticfiles",
         "users",
         "rest_framework",
         "token_blacklist",

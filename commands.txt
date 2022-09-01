@@ -1,2 +1,5 @@
 python3 manage.py migrate --database=application_db
 python3 manage.py migrate --database=auth_db
+
+# Pra criar superuser
+python3 manage.py createsuperuser --database=auth_db
