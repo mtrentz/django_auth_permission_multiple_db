@@ -1,3 +1,4 @@
+### Sistema de Produtos / Subscriptions  com empresas
 Models:
 	- Users
 	- Products
@@ -16,3 +17,10 @@ Permissão:
 Admin:
 	- Pode adicionar manualmente a subscription no usuário.
 	- Pode adicionar manualmente a subscription na empresa.
+
+
+### Views de Registration
+
+Criar uma view para registrar com email/password1/password2 (talvez nome e telefone???).
+Essa view vai deixar o usuario com is_active = 0.
+Depois o certo seria ter o treco do email pra mandar o codigo e verificar e uma outra view.

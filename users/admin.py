@@ -21,7 +21,7 @@ class UserAdmin(DjangoUserAdmin):
         "email",
         "first_name",
         "last_name",
-        "start_date",
+        "date_joined",
         "is_active",
         "is_staff",
     )
@@ -29,16 +29,16 @@ class UserAdmin(DjangoUserAdmin):
         "email",
         "first_name",
         "last_name",
-        "start_date",
+        "date_joined",
         "is_active",
         "is_staff",
     )
     search_fields = ("email", "first_name", "last_name")
-    ordering = ("start_date",)
+    ordering = ("date_joined",)
 
     fieldsets = (
         (None, {"fields": ("email", "password")}),
-        ("Personal info", {"fields": ("first_name", "last_name", "about")}),
+        ("Personal info", {"fields": ("first_name", "last_name", "cellphone", "input_company_name", "about")}),
         (
             "Permissions",
             {

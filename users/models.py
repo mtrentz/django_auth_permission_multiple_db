@@ -46,9 +46,12 @@ class User(AbstractUser):
     id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
     username = None
     email = models.EmailField(unique=True)
-    start_date = models.DateTimeField(default=timezone.now)
     about = models.TextField(max_length=500, blank=True)
     products = models.ManyToManyField("Product", blank=True, through="Subscription")
+    
+    # This will be from user self input
+    input_company_name = models.CharField(max_length=100, blank=True)
+    cellphone = models.CharField(max_length=20, blank=True)
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
