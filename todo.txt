@@ -1,0 +1,18 @@
+Models:
+	- Users
+	- Products
+	- Subscriptions
+	- Companies (?)
+	
+Relacionamentos:
+	- Um usuário pode ter vários produtos linkados por subscriptions.
+	- Uma empresa pode ter vários usuários.
+	- Uma empresa pode ter subscription ???
+	
+Permissão:
+	- Ou o usuário tem permissão pro produto
+	- Ou o usuário está numa empresa que tem permissão pro produto.
+	
+Admin:
+	- Pode adicionar manualmente a subscription no usuário.
+	- Pode adicionar manualmente a subscription na empresa.

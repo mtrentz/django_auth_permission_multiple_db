@@ -48,12 +48,28 @@ class User(AbstractUser):
     email = models.EmailField(unique=True)
     start_date = models.DateTimeField(default=timezone.now)
     about = models.TextField(max_length=500, blank=True)
-    products = models.ManyToManyField("Product", blank=True)
+    products = models.ManyToManyField("Product", blank=True, through="Subscription")
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
 
     objects = UserManager()
+
+
+class Subscription(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid4, editable=False)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey("Product", on_delete=models.CASCADE)
+    start_date = models.DateTimeField(default=timezone.now)
+    end_date = models.DateTimeField(null=True, blank=True)
+    # Keep this in case the product price changes in the future
+    price_paid = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+
+    def __str__(self):
+        return f"{self.user} - {self.product}"
+
+    class Meta:
+        unique_together = ("user", "product")
 
 
 class Product(models.Model):

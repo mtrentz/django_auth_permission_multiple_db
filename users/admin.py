@@ -1,9 +1,16 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
-from .models import User, Product
+from .models import User, Product, Subscription
 
-# Register Products
+# Register Product and Subscription models
 admin.site.register(Product)
+admin.site.register(Subscription)
+
+
+# Create Inline
+class SubscriptionInline(admin.TabularInline):
+    model = Subscription
+    extra = 1
 
 
 @admin.register(User)
@@ -29,12 +36,9 @@ class UserAdmin(DjangoUserAdmin):
     search_fields = ("email", "first_name", "last_name")
     ordering = ("start_date",)
 
-    filter_horizontal = ("products",)
-
     fieldsets = (
         (None, {"fields": ("email", "password")}),
         ("Personal info", {"fields": ("first_name", "last_name", "about")}),
-        ("Products", {"fields": ("products",)}),
         (
             "Permissions",
             {
@@ -47,6 +51,9 @@ class UserAdmin(DjangoUserAdmin):
         ),
         ("Important dates", {"fields": ("last_login", "date_joined")}),
     )
+
+    inlines = [SubscriptionInline]
+
     add_fieldsets = (
         (
             None,
