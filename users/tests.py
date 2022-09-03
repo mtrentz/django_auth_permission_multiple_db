@@ -1,12 +1,14 @@
 from tokenize import Token
-from rest_framework.test import APISimpleTestCase
+from rest_framework.test import APITestCase
 from django.contrib.auth.tokens import default_token_generator
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from knox.models import AuthToken
 
+from .models import Product
 
-class TestUser(APISimpleTestCase):
+
+class TestUser(APITestCase):
     databases = ["auth_db"]
 
     def setUp(self):
@@ -192,7 +194,119 @@ class TestUser(APISimpleTestCase):
         self.assertEqual(AuthToken.objects.count(), 0)
 
 
-class TestUserPermissions(APISimpleTestCase):
+class TestUserPermissions(APITestCase):
+    databases = ["auth_db", "application_db"]
+
+    User = get_user_model()
+
     def setUp(self):
-        self.user = get_user_model().objects.create_user(
-            email="
+        """Clean user table and create admin"""
+        # Clean user table
+        self.User.objects.all().delete()
+
+        self.admin = get_user_model().objects.create_superuser(
+            email="admin@admin.com",
+            password="admin",
+        )
+
+        # Clean products
+        Product.objects.all().delete()
+
+        # Create a product_one and product two
+        Product.objects.create(
+            name="Product One",
+            slug="product_one",
+        )
+        Product.objects.create(
+            name="Product Two",
+            slug="product_two",
+        )
+
+    def create_valid_user(self, username: str, password: str, is_staff: bool) -> User:
+        """Create a valid user"""
+        user = self.User.objects.create_user(
+            email=username,
+            password=password,
+            is_staff=is_staff,
+        )
+        return user
+
+    def test_staff_permission(self):
+        """
+        Create a staff user and check if it can access
+        the "applications" views.
+        """
+        # Create staff user
+        user = self.create_valid_user("staff@staff.com", "123password123", True)
+
+        # Login
+        url = reverse("knox_login")
+        data = {"username": "staff@staff.com", "password": "123password123"}
+        token = self.client.post(url, data, format="json").data["token"]
+
+        # Product views
+        prod_1_url = reverse("product_one")
+        prod_2_url = reverse("product_two")
+
+        # Check if can access product_one
+        headers = {"HTTP_AUTHORIZATION": "Token " + token}
+        response = self.client.get(prod_1_url, **headers, format="json")
+        self.assertEqual(response.status_code, 200)
+
+        # Check if can access product_two
+        response = self.client.get(prod_2_url, **headers, format="json")
+        self.assertEqual(response.status_code, 200)
+
+    def test_normal_user_permissions(self):
+        """
+        Create a normal user and check if, at first,
+        can't access the "applications" views.
+
+        Grant the user the permission to access the views
+        and then test again.
+        """
+        # Create normal user
+        user = self.create_valid_user("user@user.com", "123password123", False)
+
+        # Login
+        url = reverse("knox_login")
+        data = {"username": "user@user.com", "password": "123password123"}
+        token = self.client.post(url, data, format="json").data["token"]
+
+        # Product views
+        prod_1_url = reverse("product_one")
+        prod_2_url = reverse("product_two")
+
+        # Check if can't access product_one
+        headers = {"HTTP_AUTHORIZATION": "Token " + token}
+        response = self.client.get(prod_1_url, **headers, format="json")
+        self.assertEqual(response.status_code, 403)
+
+        # Check if can't access product_two
+        response = self.client.get(prod_2_url, **headers, format="json")
+        self.assertEqual(response.status_code, 403)
+
+        # Get the prod1 and prod2
+        prod1 = Product.objects.get(slug="product_one")
+        prod2 = Product.objects.get(slug="product_two")
+
+        # Add Product One to the user
+        user.products.add(prod1)
+
+        # Check if can access product_one
+        response = self.client.get(prod_1_url, **headers, format="json")
+        self.assertEqual(response.status_code, 200)
+
+        # Check if can't access product_two
+        response = self.client.get(prod_2_url, **headers, format="json")
+        self.assertEqual(response.status_code, 403)
+
+        # Add Product Two to the user
+        user.products.add(prod2)
+
+        # Check if can access product_one
+        response = self.client.get(prod_1_url, **headers, format="json")
+        self.assertEqual(response.status_code, 200)
+
+        # Check if can access product_two
+        response = self.client.get(prod_2_url, **headers, format="json")
