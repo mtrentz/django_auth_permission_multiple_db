@@ -190,3 +190,9 @@ class TestUser(APISimpleTestCase):
 
         # Check if there are 0 tokens in the database
         self.assertEqual(AuthToken.objects.count(), 0)
+
+
+class TestUserPermissions(APISimpleTestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user(
+            email="
