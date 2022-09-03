@@ -91,6 +91,8 @@ class TestUser(APISimpleTestCase):
         This will not be 100% realistic since in reality I would
         need a mail service to send an url with user_id + token to
         the client.
+
+        Also checks if can't activate with invalid token.
         """
         url = reverse("register")
         data = {
@@ -129,6 +131,20 @@ class TestUser(APISimpleTestCase):
 
         ### Now its the normal flow of sending to activation view ###
         url = reverse("activate")
+
+        # Before doing it correctly, try to activate with wrong token
+        fake_payload = payload.copy()
+        fake_payload["token"] = "wrong"
+        response = self.client.get(url, fake_payload, format="json")
+        self.assertEqual(response.status_code, 403)
+
+        # Try also with corret token but wrong user_id
+        fake_payload["token"] = confirmation_token
+        fake_payload["user_id"] = "abc123abc"
+        response = self.client.get(url, fake_payload, format="json")
+        self.assertEqual(response.status_code, 404)
+
+        # Now activate for real
         response = self.client.get(url, payload, format="json")
         self.assertEqual(response.status_code, 200)
 

@@ -1,10 +1,13 @@
+from xml.dom import ValidationErr
 from django.contrib.auth import login, get_user_model
 from django.contrib.auth.tokens import default_token_generator
+from django.core.exceptions import ValidationError
 
 from rest_framework import permissions
 from rest_framework.authtoken.serializers import AuthTokenSerializer
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.exceptions import NotFound, AuthenticationFailed, APIException
 from knox.views import LoginView as KnoxLoginView
 
 from .serializers import UserSerializer
@@ -75,11 +78,16 @@ class ActivateView(APIView):
 
         # Get the user from the id
         User = get_user_model()
-        user = User.objects.get(id=user_id)
+        try:
+            user = User.objects.get(id=user_id)
+        except ValidationError:
+            raise NotFound("User not found.")
+        except Exception as e:
+            raise APIException(e)
 
         # Check if the token is not valid
         if not default_token_generator.check_token(user, token):
-            return Response({"error": "Invalid token"}, status=400)
+            raise AuthenticationFailed("Invalid token")
 
         # Activate the user
         user.is_active = True
