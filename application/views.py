@@ -32,8 +32,8 @@ class ProductOne(APIView):
 
 
 class ProductTwo(APIView):
-    # authentication_classes = (TokenAuthentication,)
-    # permission_classes = [IsAuthenticated, AccessProductTwo]
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = [IsAuthenticated, AccessProductTwo]
 
     def get(self, request):
         return Response({"product": "two"})

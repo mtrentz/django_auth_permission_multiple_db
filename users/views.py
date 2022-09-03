@@ -7,7 +7,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from knox.views import LoginView as KnoxLoginView
 
-from .serializers import SimpleUserSerializer, UserSerializer
+from .serializers import UserSerializer
+
+# from .serializers import SimpleUserSerializer
 
 
 class LoginView(KnoxLoginView):
@@ -21,18 +23,18 @@ class LoginView(KnoxLoginView):
         return super(LoginView, self).post(request, format=None)
 
 
-class SimpleRegisterView(APIView):
-    """Register a user already active, without email verification needed"""
+# class SimpleRegisterView(APIView):
+#     """Register a user already active, without email verification needed"""
 
-    permission_classes = (permissions.AllowAny,)
+#     permission_classes = (permissions.AllowAny,)
 
-    def post(self, request, format=None):
-        serializer = SimpleUserSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        _ = serializer.save()
-        # I want the user to login afterwards, so I'll just
-        # return success message
-        return Response({"success": "User created successfully"})
+#     def post(self, request, format=None):
+#         serializer = SimpleUserSerializer(data=request.data)
+#         serializer.is_valid(raise_exception=True)
+#         _ = serializer.save()
+#         # I want the user to login afterwards, so I'll just
+#         # return success message
+#         return Response({"success": "User created successfully"})
 
 
 class RegisterView(APIView):
@@ -50,7 +52,6 @@ class RegisterView(APIView):
         confirmation_token = default_token_generator.make_token(user)
 
         ### HERE I WOULD WANT TO START A BACKGROUND TASK TO SEND EMAIL WITH CODE AND USER ID ###
-        print(">>> USER NOT ACTIVATE, SEND EMAIL WITH CODE")
         # print("ID: ", user.id)
         # print("Token: ", confirmation_token)
 

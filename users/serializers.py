@@ -4,27 +4,27 @@ from django.contrib.auth import get_user_model
 User = get_user_model()
 
 
-class SimpleUserSerializer(serializers.ModelSerializer):
-    """Register a user already active, without email verification needed"""
+# class SimpleUserSerializer(serializers.ModelSerializer):
+#     """Register a user already active, without email verification needed"""
 
-    password1 = serializers.CharField(write_only=True)
-    password2 = serializers.CharField(write_only=True)
+#     password1 = serializers.CharField(write_only=True)
+#     password2 = serializers.CharField(write_only=True)
 
-    class Meta:
-        model = User
-        fields = ("email", "password1", "password2")
+#     class Meta:
+#         model = User
+#         fields = ("email", "password1", "password2")
 
-    def create(self, validated_data):
-        user = User.objects.create_user(
-            email=validated_data["email"],
-            password=validated_data["password1"],
-        )
-        return user
+#     def create(self, validated_data):
+#         user = User.objects.create_user(
+#             email=validated_data["email"],
+#             password=validated_data["password1"],
+#         )
+#         return user
 
-    def validate(self, data):
-        if data["password1"] != data["password2"]:
-            raise serializers.ValidationError("Passwords must match.")
-        return data
+#     def validate(self, data):
+#         if data["password1"] != data["password2"]:
+#             raise serializers.ValidationError("Passwords must match.")
+#         return data
 
 
 class UserSerializer(serializers.ModelSerializer):

@@ -89,10 +89,12 @@ DATABASES = {
     "application_db": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "app_db.sqlite3",
+        "TEST": {"MIRROR": "application_db"},
     },
     "auth_db": {
         "ENGINE": "django.db.backends.sqlite3",
         "NAME": BASE_DIR / "auth_db.sqlite3",
+        "TEST": {"MIRROR": "auth_db"},
     },
 }
 
